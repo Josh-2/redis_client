@@ -1,12 +1,12 @@
 import os
 from setuptools import setup
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+def read(file_name):
+    return open(os.path.join(os.path.dirname(__file__), file_name)).read()
 
 setup(
     name = "redis_client",
-    version = "1.0.0",
+    version = "1.0.1",
     author = "Josh-2",
     author_email = "",
     description = ("Redis client"),

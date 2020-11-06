@@ -1,3 +1,4 @@
+# cSpell:words mget, keepttl, mset
 from datetime import datetime, date
 from os import environ
 from json import JSONEncoder, JSONDecoder, loads, dumps
@@ -33,7 +34,8 @@ class RedisClient(Redis):
         """
         return self.decode(self.mget(keys, *args))
 
-    def set_(self, name, value,
+    @classmethod
+    def set_(cls, name, value,
             ex=None, px=None, nx=False, xx=False, keepttl=False):
         """
         Set the value at key ``name`` to ``value``
@@ -51,61 +53,32 @@ class RedisClient(Redis):
         ``keepttl`` if True, retain the time to live associated with the key.
             (Available since Redis 6.0)
         """
-        if isinstance(value, bool):
-            if value:
-                value = 'True'
-            else:
-                value = 'False'
-        return self.set(name, value, ex=ex, px=px, nx=nx, xx=xx, keepttl=keepttl)
-
-    # def mset_(self, mapping):
-    #     """
-    #     Sets key/values based on a mapping. Mapping is a dictionary of
-    #     key/value pairs. Both keys and values should be strings or types that
-    #     can be cast to a string via str().
-    #     """
-    #     items = []
-    #     for pair in iteritems(mapping):
-    #         items.extend(pair)
-    #     return self.execute_command('MSET', *items)
-
-    @staticmethod
-    def dumps(message):
-        """Convert to json with datetime safe encoder."""
-        try:
-            message = dumps(vars(message), cls=JSONDatetimeEncoder)
-        except TypeError:
-            message = dumps(message, cls=JSONDatetimeEncoder)
-        return message
+        if not isinstance(value, str):
+            value = cls.encode(value)
+        return cls.set(name, value, ex=ex, px=px, nx=nx, xx=xx, keepttl=keepttl)
 
     @classmethod
-    def decode(cls, message:bytes):
-        """Decodes bytes to string, list, """
-        message = cls._decode(message)
-        if isinstance(message, list):
-            message = [cls._decode(submessage) for submessage in message]
-            return message[0], *message[1::]
-        return message
+    def encode(cls, value) -> str:
+        """Encodes values with json"""
+        if isinstance(value, list) or isinstance(value, tuple):
+            value = [cls.encode(sub_value) for sub_value in value]
+        if value is not None:
+            try:
+                value = dumps(vars(value), cls=JSONDatetimeEncoder)
+            except TypeError:
+                value = dumps(value, cls=JSONDatetimeEncoder)
+        return value
 
     @classmethod
-    def _decode(cls, message:bytes):
-        """Decodes bytes to string."""
-        if isinstance(message, bytes):
-            message = message.decode('utf8')
-        # message = cls.loads(message)
-        return message
-
-    @classmethod
-    def loads(cls, message, recursive=False):
-        """Converts json string to dict."""
-        try:
-            message = loads(message, cls=JSONDatetimeDecoder)
-        except (JSONDecodeError, TypeError):
-            # print('JSONDecodeError or TypeError')
-            return message
-        if recursive:
-            return cls.loads(message)
-        return message
+    def decode(cls, value:bytes):
+        """Decodes bytes to string then json loads"""
+        if isinstance(value, bytes):
+            value = value.decode('utf8')
+        if value is not None:
+            value = loads(value, cls=JSONDatetimeDecoder)
+        if isinstance(value, list) or isinstance(value, tuple):
+            value = [cls.decode(sub_value) for sub_value in value]
+        return value
 
 class JSONDatetimeEncoder(JSONEncoder):
     """
@@ -148,8 +121,8 @@ class JSONDatetimeEncoder(JSONEncoder):
 
 class JSONDatetimeDecoder(JSONDecoder):
     """Decodes datetime type from json encoded with JSONDatetimeEncoder."""
-    def __init__(self, *args, **kargs):
-        JSONDecoder.__init__(self, object_hook=self.dict_to_object, *args, **kargs)
+    def __init__(self, *args, **kwargs):
+        JSONDecoder.__init__(self, object_hook=self.dict_to_object, *args, **kwargs)
 
     def dict_to_object(self, my_dict):
         if '__type__' not in my_dict:
