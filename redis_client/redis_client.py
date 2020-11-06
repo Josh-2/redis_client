@@ -36,7 +36,6 @@ class RedisClient(Redis):
         """
         return cls.decode(cls.mget(keys, *args))
 
-    @classmethod
     def set_(cls, name, value,
             ex=None, px=None, nx=False, xx=False, keepttl=False):
         """
