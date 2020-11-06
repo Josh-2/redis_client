@@ -22,21 +22,19 @@ class RedisClient(Redis):
     #     except RedisError:
     #         pass
 
-    @classmethod
-    def get_(cls, name):
+    def get_(self, name):
         """
         Return the value at key ``name``, or None if the key doesn't exist
         """
-        return cls.decode(cls.get(name))
+        return self.decode(self.get(name))
 
-    @classmethod
-    def mget_(cls, keys, *args):
+    def mget_(self, keys, *args):
         """
         Returns a list of values ordered identically to ``keys``
         """
-        return cls.decode(cls.mget(keys, *args))
+        return self.decode(self.mget(keys, *args))
 
-    def set_(cls, name, value,
+    def set_(self, name, value,
             ex=None, px=None, nx=False, xx=False, keepttl=False):
         """
         Set the value at key ``name`` to ``value``
@@ -55,8 +53,8 @@ class RedisClient(Redis):
             (Available since Redis 6.0)
         """
         if not isinstance(value, str):
-            value = cls.encode(value)
-        return cls.set(name, value, ex=ex, px=px, nx=nx, xx=xx, keepttl=keepttl)
+            value = self.encode(value)
+        return self.set(name, value, ex=ex, px=px, nx=nx, xx=xx, keepttl=keepttl)
 
     @classmethod
     def encode(cls, value) -> str:
