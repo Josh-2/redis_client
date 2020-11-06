@@ -76,7 +76,7 @@ class RedisClient(Redis):
         if value is not None:
             try:
                 value = loads(value, cls=JSONDatetimeDecoder)
-            except TypeError:
+            except (TypeError, JSONDecodeError):
                 pass
         if isinstance(value, list) or isinstance(value, tuple):
             value = [cls.decode(sub_value) for sub_value in value]
