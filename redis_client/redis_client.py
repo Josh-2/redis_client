@@ -74,7 +74,10 @@ class RedisClient(Redis):
         if isinstance(value, bytes):
             value = value.decode('utf8')
         if value is not None:
-            value = loads(value, cls=JSONDatetimeDecoder)
+            try:
+                value = loads(value, cls=JSONDatetimeDecoder)
+            except TypeError:
+                pass
         if isinstance(value, list) or isinstance(value, tuple):
             value = [cls.decode(sub_value) for sub_value in value]
         return value
