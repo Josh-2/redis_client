@@ -6,7 +6,7 @@ def read(file_name):
 
 setup(
     name = "redis_client",
-    version = "1.0.1",
+    version = "1.0.2",
     author = "Josh-2",
     author_email = "",
     description = ("Redis client"),

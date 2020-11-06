@@ -22,17 +22,19 @@ class RedisClient(Redis):
     #     except RedisError:
     #         pass
 
-    def get_(self, name):
+    @classmethod
+    def get_(cls, name):
         """
         Return the value at key ``name``, or None if the key doesn't exist
         """
-        return self._decode(self.get(name))
+        return cls.decode(cls.get(name))
 
-    def mget_(self, keys, *args):
+    @classmethod
+    def mget_(cls, keys, *args):
         """
         Returns a list of values ordered identically to ``keys``
         """
-        return self.decode(self.mget(keys, *args))
+        return cls.decode(cls.mget(keys, *args))
 
     @classmethod
     def set_(cls, name, value,
