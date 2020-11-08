@@ -56,8 +56,7 @@ class RedisClient(Redis):
             value = self.encode(value)
         return self.set(name, value, ex=ex, px=px, nx=nx, xx=xx, keepttl=keepttl)
 
-    @classmethod
-    def blpop_(cls, keys, timeout=0):
+    def blpop_(self, keys, timeout=0):
         """
         LPOP a value off of the first non-empty list
         named in the ``keys`` list.
@@ -68,12 +67,11 @@ class RedisClient(Redis):
 
         If timeout is 0, then block indefinitely.
         """
-        return cls.decode(cls.blpop(keys, timeout))
+        return self.decode(self.blpop(keys, timeout))
 
-    @classmethod
-    def rpush_(cls, name, *values):
+    def rpush_(self, name, *values):
         "Push ``values`` onto the tail of the list ``name``"
-        return cls.encode(cls.rpush(name, *values))
+        return self.encode(self.rpush(name, *values))
 
     @classmethod
     def encode(cls, value) -> str:
