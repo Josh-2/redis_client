@@ -57,6 +57,25 @@ class RedisClient(Redis):
         return self.set(name, value, ex=ex, px=px, nx=nx, xx=xx, keepttl=keepttl)
 
     @classmethod
+    def blpop_(cls, keys, timeout=0):
+        """
+        LPOP a value off of the first non-empty list
+        named in the ``keys`` list.
+
+        If none of the lists in ``keys`` has a value to LPOP, then block
+        for ``timeout`` seconds, or until a value gets pushed on to one
+        of the lists.
+
+        If timeout is 0, then block indefinitely.
+        """
+        return cls.decode(cls.blpop(keys, timeout))
+
+    @classmethod
+    def rpush_(cls, name, *values):
+        "Push ``values`` onto the tail of the list ``name``"
+        return cls.encode(cls.rpush(name, *values))
+
+    @classmethod
     def encode(cls, value) -> str:
         """Encodes values with json"""
         if isinstance(value, list) or isinstance(value, tuple):
