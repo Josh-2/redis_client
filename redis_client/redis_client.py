@@ -71,7 +71,8 @@ class RedisClient(Redis):
 
     def rpush_(self, name, *values):
         "Push ``values`` onto the tail of the list ``name``"
-        return self.encode(self.rpush(name, *values))
+        values = [self.encode(value) for value in values]
+        return self.rpush(name, *values)
 
     @classmethod
     def encode(cls, value) -> str:
