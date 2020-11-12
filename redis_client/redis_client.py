@@ -79,11 +79,10 @@ class RedisClient(Redis):
         """Encodes values with json"""
         if isinstance(value, list) or isinstance(value, tuple):
             value = [cls.encode(sub_value) for sub_value in value]
-        if value is not None:
-            try:
-                value = dumps(vars(value), cls=JSONDatetimeEncoder)
-            except TypeError:
-                value = dumps(value, cls=JSONDatetimeEncoder)
+        try:
+            value = dumps(vars(value), cls=JSONDatetimeEncoder)
+        except TypeError:
+            value = dumps(value, cls=JSONDatetimeEncoder)
         return value
 
     @classmethod
