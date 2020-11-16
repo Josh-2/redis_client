@@ -74,6 +74,30 @@ class RedisClient(Redis):
         values = [self.encode(value) for value in values]
         return self.rpush(name, *values)
 
+    def sadd_(self, name, *values):
+        "Add ``value(s)`` to set ``name``"
+        values = [self.encode(value) for value in values]
+        return self.sadd(name, *values)
+
+    def sismember_(self, name, value):
+        "Return a boolean indicating if ``value`` is a member of set ``name``"
+        value = self.encode(value)
+        return self.sismember(name, value)
+
+    def smembers_(self, name):
+        "Return all members of the set ``name``"
+        return self.decode(self.smembers(name))
+
+    def smove_(self, src, dst, value):
+        "Move ``value`` from set ``src`` to set ``dst`` atomically"
+        value = self.encode(value)
+        return self.smove(src, dst, value)
+
+    def srem_(self, name, *values):
+        "Remove ``values`` from set ``name``"
+        values = [self.encode(value) for value in values]
+        return self.srem(name, *values)
+
     @classmethod
     def encode(cls, value) -> str:
         """Encodes values with json"""
