@@ -98,6 +98,23 @@ class RedisClient(Redis):
         values = [self.encode(value) for value in values]
         return self.srem(name, *values)
 
+    def zrange_(self, name, start, end, desc=False, withscores=False,
+               score_cast_func=float):
+        """
+        Return a range of values from sorted set ``name`` between
+        ``start`` and ``end`` sorted in ascending order.
+
+        ``start`` and ``end`` can be negative, indicating the end of the range.
+
+        ``desc`` a boolean indicating whether to sort the results descendingly
+
+        ``withscores`` indicates to return the scores along with the values.
+        The return type is a list of (value, score) pairs
+
+        ``score_cast_func`` a callable used to cast the score return value
+        """
+        return self.decode(self.zrange(name, start, end, desc=desc, withscores=withscores, score_cast_func=score_cast_func))
+
     @classmethod
     def encode(cls, value) -> str:
         """Encodes values with json"""
