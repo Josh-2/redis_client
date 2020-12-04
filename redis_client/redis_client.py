@@ -22,11 +22,12 @@ class RedisClient(Redis):
     #     except RedisError:
     #         pass
 
-    def get_(self, name):
+    def get_(self, name, value=None):
         """
-        Return the value at key ``name``, or None if the key doesn't exist
+        Return the value at key ``name``, or ``value`` if the key doesn't exist. Default value None
         """
-        return self.decode(self.get(name))
+        output = self.decode(self.get(name))
+        return output if output is not None else value
 
     def mget_(self, keys, *args):
         """
