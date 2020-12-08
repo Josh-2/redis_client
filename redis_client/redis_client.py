@@ -116,6 +116,10 @@ class RedisClient(Redis):
         """
         return self.decode(self.zrange(name, start, end, desc=desc, withscores=withscores, score_cast_func=score_cast_func))
 
+    def keys_(self, pattern='*'):
+        "Returns a list of keys matching ``pattern``"
+        return self.decode(self.keys(pattern=pattern))
+
     @classmethod
     def encode(cls, value) -> str:
         """Encodes values with json"""
